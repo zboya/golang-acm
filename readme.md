@@ -1,6 +1,6 @@
 # golang ACM练习场
 
-* A+B问题
+* A+B问题 （难度0）
 **描述**
 此题为练手用题，请大家计算一下a+b的值
 **输入**
@@ -26,7 +26,7 @@ func main() {
 
 ```
 
-* 括号配对问题
+* 括号配对问题 （难度3）
 **描述**
 现在，有一行括号序列，请你检查这行括号是否配对。
 **输入**
@@ -94,23 +94,24 @@ func matchPairBracket(str *string) string {
 
 }
 
-func push(stack *[]byte, r byte) {
+func push(stack *[]byte, r byte) *[]byte {
     *stack = append(*stack, r)
+    return stack
+
 }
 
 func pop(stack *[]byte) {
     *stack = (*stack)[:len(*stack)-1]
 }
 
-
 ```
 
-* 多边形重心问题
+* 多边形重心问题 （难度5）
 **描述**
 在某个多边形上，取n个点，这n个点顺序给出，按照给出顺序将相邻的点用直线连接， （第一个和最后一个连接），所有线段不和其他线段相交，但是可以重合，可得到一个多边形或一条线段或一个多边形和一个线段的连接后的图形； 
 如果是一条线段,我们定义面积为0，重心坐标为（0,0）.现在求给出的点集组成的图形的面积和重心横纵坐标的和；
 **输入**
-第一行有一个整数0<n<11,表示有n组数据；
+第一行有一个整数`0<n<11`,表示有n组数据；
 每组数据第一行有一个整数m<10000,表示有这个多边形有m个顶点；
 **输出**
 输出每个多边形的面积、重心横纵坐标的和，小数点后保留三位；
@@ -184,10 +185,9 @@ func handle(ps []point) *result {
         return &result{0, 0}
     } else {
         var area float32
-        var ok bool
         for i := 0; i < m-2; i++ {
-            ok, _ = isTriangle(ps[i], ps[i+1], ps[i+2])
-            if !ok {
+            tri, _ := areaTriangle(ps[i], ps[i+1], ps[i+2])
+            if !tri {
                 remove(&ps, i+1)
             }
         }
@@ -196,9 +196,9 @@ func handle(ps []point) *result {
         mFloat := float32(mTrue)
         for i := 0; i < mTrue-2; i++ {
             if i < 1 {
-                _, area = isTriangle(ps[i], ps[i+1], ps[i+2])
+                _, area = areaTriangle(ps[i], ps[i+1], ps[i+2])
             } else {
-                _, area = isTriangle(ps[0], ps[i+1], ps[i+2])
+                _, area = areaTriangle(ps[0], ps[i+1], ps[i+2])
             }
             areaSum = areaSum + area
 
@@ -218,8 +218,7 @@ func handle(ps []point) *result {
 }
 
 //三点的面积
-
-func isTriangle(p0, p1, p2 point) (bool, float32) {
+func areaTriangle(p0, p1, p2 point) (bool, float32) {
     t1 := p0.x*p1.y + p1.x*p2.y + p2.x*p0.y
     t2 := p1.x*p0.y + p2.x*p1.y + p0.x*p2.y
     if t1 == t2 {
@@ -234,10 +233,9 @@ func remove(slice *[]point, i int) {
     *slice = append((*slice)[:i], (*slice)[i+1:]...)
 }
 
-
 ```
 
-* ASCII码排序
+* ASCII码排序 （难度2）
 **描述**
 输入三个字符（可以重复）后，按各字符的ASCII码从小到大的顺序输出这三个字符。
 **输入**
@@ -253,6 +251,51 @@ e q w
 a d s
 
 ```go
+package main
+
+import "fmt"
+
+func main() {
+
+    var n int //n组数据
+    var str string
+    var result string
+
+    fmt.Scan(&n)
+    for i := 0; i < n; i++ {
+        fmt.Scan(&str)
+        result = result + sort(&str) + "\n"
+    }
+    fmt.Println(result)
+}
+
+func sort(str *string) string {
+    strByte := []byte(*str)
+    n := len(strByte)
+    for i := 0; i < n; i++ {
+        for j := 0; j < n-i-1; j++ {
+            if strByte[j+1] < strByte[j] {
+                strByte[j+1], strByte[j] = strByte[j], strByte[j+1]
+            }
+        }
+
+    }
+    result := insertSpace(&strByte)
+    return string(result)
+}
+
+func insertSpace(src *[]byte) []byte {
+    l := len(*src)
+    dst := make([]byte, 2*l)
+    for i := 0; i < len(dst); i++ {
+        if i%2 == 0 {
+            dst[i] = (*src)[i/2]
+        } else {
+            dst[i] = ' '
+        }
+    }
+    return dst
+}
 
 ```
 
@@ -378,7 +421,7 @@ The citizens of Bytetown, AB, could not stand that the candidates in the mayoral
 •   The wall is divided into segments and the width of each segment is one byte. 
 •   Each poster must completely cover a contiguous number of wall segments.
 They have built a wall 10000000 bytes long (such that there is enough place for all candidates). When the electoral campaign was restarted, the candidates were placing their posters on the wall and their posters differed widely in width. Moreover, the candidates started placing their posters on wall segments already occupied by other posters. Everyone in Bytetown was curious whose posters will be visible (entirely or in part) on the last day before elections. 
-Your task is to find the number of visible posters when all the posters are placed given the information about posters size, their place and order of placement on the electoral wall. 
+Your task is to find the number of visible posters when all the posters are placed given the information about posters' size, their place and order of placement on the electoral wall. 
 **输入**
 The first line of input contains a number c giving the number of cases that follow. The first line of data for a single case contains number 1 <= n <= 10000. The subsequent n lines describe the posters in the order in which they were placed. The i-th line among the n lines contains two integer numbers li and ri which are the number of the wall segment occupied by the left end and the right end of the i-th poster, respectively. We know that for each 1 <= i <= n, 1 <= li <= ri <= 10000000. After the i-th poster is placed, it entirely covers all wall segments numbered li, li+1 ,... , ri.
 **输出**
