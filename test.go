@@ -1,45 +1,60 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-
-	var n int //n组数据
+	var n int
 	var str string
 	var result string
-
 	fmt.Scan(&n)
 	for i := 0; i < n; i++ {
 		fmt.Scan(&str)
-		result = result + sort(&str) + "\n"
+		//match
+		rst := matchPairBracket(&str)
+		result = result + rst
 	}
-	fmt.Println(result)
+	fmt.Printf("----\n%s", result)
 }
 
-func sort(str *string) string {
+func matchPairBracket(str *string) string {
+	var stack []byte
+	r := []byte("()[]")
+	strLen := len(*str) % 2
 	strByte := []byte(*str)
-	n := len(strByte)
-	for i := 0; i < n; i++ {
-		for j := 0; j < n-i-1; j++ {
-			if strByte[j+1] < strByte[j] {
-				strByte[j+1], strByte[j] = strByte[j], strByte[j+1]
+
+	if strLen == 1 || r[0] != strByte[0] && r[2] != strByte[0] {
+		return "NO\n"
+	} else {
+		for i := 0; i < len(*str); i++ {
+			if r[0] == strByte[i] || r[2] == strByte[i] {
+				push(&stack, strByte[i])
+			} else {
+				if r[1] == strByte[i] && r[0] == stack[len(stack)-1] {
+					pop(&stack)
+				} else if r[3] == strByte[i] && r[2] == stack[len(stack)-1] {
+					pop(&stack)
+				} else {
+					push(&stack, strByte[i])
+				}
 			}
 		}
-
-	}
-	result := insertSpace(&strByte)
-	return string(result)
-}
-
-func insertSpace(src *[]byte) []byte {
-	l := len(*src)
-	dst := make([]byte, 2*l)
-	for i := 0; i < len(dst); i++ {
-		if i%2 == 0 {
-			dst[i] = (*src)[i/2]
+		if len(stack) == 0 {
+			return "YES\n"
 		} else {
-			dst[i] = ' '
+			return "NO\n"
 		}
 	}
-	return dst
+
+}
+
+func push(stack *[]byte, r byte) *[]byte {
+	*stack = append(*stack, r)
+	return stack
+
+}
+
+func pop(stack *[]byte) {
+	*stack = (*stack)[:len(*stack)-1]
 }
