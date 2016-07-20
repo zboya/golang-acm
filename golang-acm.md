@@ -23,17 +23,7 @@
 5
 
 ```go
-package main
 
-import (
-    "fmt"
-)
-
-func main() {
-    var a, b int
-    fmt.Scan(&a, &b)
-    fmt.Println(a + b)
-}
 
 ```
 
@@ -96,51 +86,7 @@ e q w
 a d s
 
 ```go
-package main
 
-import "fmt"
-
-func main() {
-
-    var n int //n组数据
-    var str string
-    var result string
-
-    fmt.Scan(&n)
-    for i := 0; i < n; i++ {
-        fmt.Scan(&str)
-        result = result + sort(&str) + "\n"
-    }
-    fmt.Println(result)
-}
-
-func sort(str *string) string {
-    strByte := []byte(*str)
-    n := len(strByte)
-    for i := 0; i < n; i++ {
-        for j := 0; j < n-i-1; j++ {
-            if strByte[j+1] < strByte[j] {
-                strByte[j+1], strByte[j] = strByte[j], strByte[j+1]
-            }
-        }
-
-    }
-    result := insertSpace(&strByte)
-    return string(result)
-}
-
-func insertSpace(src *[]byte) []byte {
-    l := len(*src)
-    dst := make([]byte, 2*l)
-    for i := 0; i < len(dst); i++ {
-        if i%2 == 0 {
-            dst[i] = (*src)[i/2]
-        } else {
-            dst[i] = ' '
-        }
-    }
-    return dst
-}
 
 ```
 * 括号配对问题 （难度3）
@@ -171,66 +117,6 @@ No
 Yes
 
 ```go
-package main
-
-import (
-    "fmt"
-)
-
-func main() {
-    var n int
-    var str string
-    var result string
-    fmt.Scan( &n)
-    for i := 0; i < n; i++ {
-        fmt.Scan( &str)
-        //match
-        rst := matchPairBracket(&str)
-        result = result + rst
-    }
-    fmt.Printf("----\n%s", result)
-}
-
-func matchPairBracket(str *string) string {
-    var stack []byte
-    r := []byte("()[]")
-    strLen := len(*str) % 2
-    strByte := []byte(*str)
-
-    if strLen == 1 || r[0] != strByte[0] && r[2] != strByte[0] {
-        return "NO\n"
-    } else {
-        for i := 0; i < len(*str); i++ {
-            if r[0] == strByte[i] || r[2] == strByte[i] {
-                push(&stack, strByte[i])
-            } else {
-                if r[1] == strByte[i] && r[0] == stack[len(stack)-1] {
-                    pop(&stack)
-                } else if r[3] == strByte[i] && r[2] == stack[len(stack)-1] {
-                    pop(&stack)
-                } else {
-                    push(&stack, strByte[i])
-                }
-            }
-        }
-        if len(stack) == 0 {
-            return "YES\n"
-        } else {
-            return "NO\n"
-        }
-    }
-
-}
-
-func push(stack *[]byte, r byte) *[]byte {
-    *stack = append(*stack, r)
-    return stack
-
-}
-
-func pop(stack *[]byte) {
-    *stack = (*stack)[:len(*stack)-1]
-}
 
 ```
 
@@ -380,102 +266,6 @@ m行后是新一组的数据；
 0.500 1.000
 
 ```go
-package main
-
-import (
-    "fmt"
-    "math"
-)
-
-type point struct {
-    x float32
-    y float32
-}
-
-type result struct {
-    a float32
-    c float32
-}
-
-func main() {
-
-    var n int   //n组数据
-    var m int   //m个顶点
-    var p point //坐标
-    var ps []point
-    var rlt []result
-
-    fmt.Scan(&n)
-    for i := 0; i < n; i++ {
-        fmt.Scan(&m)
-        for j := 0; j < m; j++ {
-            fmt.Scan(&p.x, &p.y)
-            ps = append(ps, p)
-        }
-        r := handle(ps)
-        ps = []point{}
-        rlt = append(rlt, *r)
-    }
-    fmt.Println("--------")
-    for _, v := range rlt {
-        fmt.Println(v.a, v.c)
-    }
-}
-
-func handle(ps []point) *result {
-    var x, y, areaSum float32 = 0, 0, 0
-    m := len(ps)
-    if m < 3 {
-        return &result{0, 0}
-    } else {
-        var area float32
-        for i := 0; i < m-2; i++ {
-            tri, _ := areaTriangle(ps[i], ps[i+1], ps[i+2])
-            if !tri {
-                remove(&ps, i+1)
-            }
-        }
-
-        mTrue := len(ps)
-        mFloat := float32(mTrue)
-        for i := 0; i < mTrue-2; i++ {
-            if i < 1 {
-                _, area = areaTriangle(ps[i], ps[i+1], ps[i+2])
-            } else {
-                _, area = areaTriangle(ps[0], ps[i+1], ps[i+2])
-            }
-            areaSum = areaSum + area
-
-        }
-        for _, p := range ps {
-            x = x + p.x
-            y = y + p.y
-        }
-        if mTrue < 3 {
-            return &result{0, 0}
-        } else {
-            return &result{areaSum, (x + y) / mFloat}
-        }
-
-    }
-
-}
-
-//三点的面积
-func areaTriangle(p0, p1, p2 point) (bool, float32) {
-    t1 := p0.x*p1.y + p1.x*p2.y + p2.x*p0.y
-    t2 := p1.x*p0.y + p2.x*p1.y + p0.x*p2.y
-    if t1 == t2 {
-        return false, 0
-    } else {
-        area := math.Abs(float64(t2-t1) / 2)
-        return true, float32(area)
-    }
-}
-
-func remove(slice *[]point, i int) {
-    *slice = append((*slice)[:i], (*slice)[i+1:]...)
-}
 
 ```
 
