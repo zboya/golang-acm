@@ -9,7 +9,9 @@ ACM-Association for Computing Machinery , 即国际计算机学会。因主办�
 * 题目
 * 答案
 * 说明
+
 其中题目就是github上的题目，答案就是实现题目要求的golang代码，说明可有可无，有的话介绍一些答案的实现.
+
 如：![issuse](https://github.com/sheepbao/golang-acm/blob/master/issue.png)
 
 ## 贡献题目
